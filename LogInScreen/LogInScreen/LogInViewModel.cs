@@ -23,7 +23,6 @@ namespace LogInScreen
         {
             return true;
         }
-
        
 
         private string _UserName;
@@ -55,7 +54,7 @@ namespace LogInScreen
             }
             set 
             {
-                if (_Password != value && string.IsNullOrEmpty(value))
+                if (_Password != value && !string.IsNullOrEmpty(value))
                 {
                     _Password = value;
                     RaisePropertyChanged(Password);
@@ -84,14 +83,10 @@ namespace LogInScreen
             {
                 return new RelayCommand(param => this.GetApproval(param));
             }
-        }
-       
-
-
-
-        public event PropertyChangedEventHandler PropertyChanged;     
-
-
+        }   
+        
+        public event PropertyChangedEventHandler PropertyChanged;   
+        
         public void RaisePropertyChanged(string PropertyName)
         {
             if(PropertyChanged!=null)
@@ -99,12 +94,12 @@ namespace LogInScreen
                 PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
             }
         }
-
-
+        
         private void GetApproval(object Parameter)
         {
+            #region Version 1
             //Here VM knows about the View, voilating MVVM Rules. Next Version I will address it.
-            this.ErrorMessage = "";
+            /*this.ErrorMessage = "";
             PasswordBox Password = Parameter as PasswordBox;
 
             if (Password.Password != string.Empty && !string.IsNullOrEmpty(this.UserName))
@@ -118,7 +113,26 @@ namespace LogInScreen
                 {
                     this.ErrorMessage = "User Name found";
                 }
+            }*/
+            #endregion
+
+            #region Version 2           
+
+            if (this.Password != string.Empty && !string.IsNullOrEmpty(this.UserName))
+            {
+                bool approved = Model.GetApproval(this.UserName, this.Password);
+                if (!approved)
+                {
+                    this.ErrorMessage = "Either UserName or Password is incorrect";
+                }
+                else
+                {
+                    this.ErrorMessage = "User Name found";
+                }
             }
+
+            #endregion
+
         }
 
         
